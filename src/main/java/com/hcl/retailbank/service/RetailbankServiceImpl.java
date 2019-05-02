@@ -3,13 +3,16 @@ package com.hcl.retailbank.service;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.hcl.retailbank.entity.CustomerCreation;
 import com.hcl.retailbank.entity.CustomerFundTransfer;
+import com.hcl.retailbank.pojo.CustomerViewHistory;
 import com.hcl.retailbank.pojo.FundTransferRequest;
 import com.hcl.retailbank.pojo.FundTransferResponce;
 import com.hcl.retailbank.repository.CustomerGetRepository;
+import com.hcl.retailbank.repository.CustomerViewHistoryRepository;
 import com.hcl.retailbank.repository.FundTransferRepository;
 
 @Service
@@ -18,7 +21,9 @@ public class RetailbankServiceImpl implements RetailbankService{
 	FundTransferRepository fundTransferRepository;
 	@Autowired
 	CustomerGetRepository customerGetRepository;
-
+	 @Autowired
+	 @Qualifier("customerViewHistoryRepositories")
+	private CustomerViewHistoryRepository customerViewHistoryRepository;
 	@Override
 	public FundTransferResponce fundTransfer(FundTransferRequest fundTransferrequest) {
 		
@@ -51,7 +56,17 @@ public class RetailbankServiceImpl implements RetailbankService{
 			
 			fundTransferResponce.setResponceCode(200);
 			fundTransferResponce.setResponceStatus("sucess");
+			
+			CustomerViewHistory customerViewHistory=new CustomerViewHistory();
+			customerViewHistory.setFromAccountNumber(customerFundTransfer.getFromAccountNumber());
+			customerViewHistory.setToAccountNumber(customerFundTransfer.getToAccountNumber());
+			customerViewHistory.setTransactionAmount(customerFundTransfer.getTransactionAmmount());
+			customerViewHistory.setTransactionDate(customerFundTransfer.getTransactiondate());
+			customerViewHistory.setTransactionId(customerFundTransfer.getTransactionId());
+			customerViewHistory.setTransactionType(customerFundTransfer.getTransactionType());
+			customerViewHistoryRepository.save(customerViewHistory);
 			return fundTransferResponce;
+			
 		}catch(Exception e) {
 			fundTransferResponce.setResponceCode(400);
 			fundTransferResponce.setResponceStatus("fail");
