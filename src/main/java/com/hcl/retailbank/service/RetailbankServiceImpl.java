@@ -112,13 +112,13 @@ public class RetailbankServiceImpl implements RetailbankService {
 
 	@Override
 	public boolean validateUser(long id) {
-		boolean userExists = customerLoginRepo.existsById((int) id);
+		boolean userExists = customerLoginRepo.existsById(id);
 		return userExists;
 	}
 
 	@Override
 	public void fetchAccountSummary(CustomerCreation customerCreation) {
-		customerLoginRepo.findByCustomerIdAndCustomerNameAndBalance(customerCreation);
+		customerLoginRepo.findByCustomerIdAndCustomerNameAndBalance(customerCreation.getCustomerId(), customerCreation.getCustomerName(), customerCreation.getBalance());
 	}
 
 }
