@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 
 import com.hcl.retailbank.entity.CustomerCreation;
 import com.hcl.retailbank.entity.CustomerFundTransfer;
+import com.hcl.retailbank.pojo.CustomerRequest;
 import com.hcl.retailbank.pojo.FundTransferRequest;
 import com.hcl.retailbank.pojo.FundTransferResponce;
+import com.hcl.retailbank.repository.CustomerCreationRepository;
 import com.hcl.retailbank.repository.CustomerGetRepository;
 import com.hcl.retailbank.repository.FundTransferRepository;
 
@@ -18,6 +20,8 @@ public class RetailbankServiceImpl implements RetailbankService{
 	FundTransferRepository fundTransferRepository;
 	@Autowired
 	CustomerGetRepository customerGetRepository;
+	@Autowired
+	CustomerCreationRepository customerCreationRepository;
 
 	@Override
 	public FundTransferResponce fundTransfer(FundTransferRequest fundTransferrequest) {
@@ -26,13 +30,22 @@ public class RetailbankServiceImpl implements RetailbankService{
 		try {
 			CustomerFundTransfer customerFundTransfer = new CustomerFundTransfer();
 			customerFundTransfer.setFromAccountNumber(fundTransferrequest.getFromAccountNumber());
-			
+			customerFundTransfer.setToAccountNumber(fundTransferrequest.getToAccountNumber());
 		 CustomerCreation source= customerGetRepository.findByCustomerId(fundTransferrequest.getFromAccountNumber());
 		 double current=source.getBalance();
-			double update=current-fundTransferrequest.getTransactionAmount();
+		 double update=current-fundTransferrequest.getTransactionAmount();
+		 if(current>5000 && update>5000){
 			source.setBalance(update);
 			customerGetRepository.save(source);
-		 customerFundTransfer.setToAccountNumber(fundTransferrequest.getToAccountNumber());
+		 }else {
+			 fundTransferResponce.setResponceCode(400);
+			StringBuilder stringBuilder =new StringBuilder();
+			 stringBuilder.append("unable to process because insufficiends balance you must maintain minimum balance");
+			fundTransferResponce.setResponceMessage(stringBuilder);
+			return fundTransferResponce;
+		 }
+			
+		 
 		 
 			CustomerCreation destination= customerGetRepository.findByCustomerId(fundTransferrequest.getToAccountNumber());
 			
@@ -50,18 +63,28 @@ public class RetailbankServiceImpl implements RetailbankService{
 			fundTransferRepository.save(customerFundTransfer);
 			
 			fundTransferResponce.setResponceCode(200);
-			fundTransferResponce.setResponceStatus("sucess");
+			StringBuilder stringBuilder =new StringBuilder();
+             stringBuilder.append(fundTransferrequest.getTransactionAmount());
+			 stringBuilder.append("rupess can transfer sucessfully to");
+			 stringBuilder.append(fundTransferrequest.getToAccountNumber());
+			fundTransferResponce.setResponceMessage(stringBuilder);
 			return fundTransferResponce;
 		}catch(Exception e) {
 			fundTransferResponce.setResponceCode(400);
-			fundTransferResponce.setResponceStatus("fail");
+			fundTransferResponce.setResponceMessage(new StringBuilder("some internal problem please try after sometimes"));
 			return fundTransferResponce;
 			
 		}
 		
-		
-		
-		
+	}
+
+	@Override
+	public String addCustomer(CustomerRequest customerRequest) {
+		CustomerCreation customerCreation =new CustomerCreation();
+		customerCreation.setCustomerName(customerRequest.getName());
+		customerCreation.setBalance(customerRequest.getBalance());
+		customerCreationRepository.save(customerCreation);
+		return "sucessfully added";
 	}
 
 }

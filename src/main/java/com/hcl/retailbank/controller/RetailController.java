@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hcl.retailbank.pojo.CustomerRequest;
 import com.hcl.retailbank.pojo.FundTransferRequest;
 import com.hcl.retailbank.pojo.FundTransferResponce;
 import com.hcl.retailbank.service.RetailbankService;
@@ -19,6 +20,12 @@ public class RetailController{
 	@PostMapping("/fundtransfer")
 public FundTransferResponce fundTransfer(@RequestBody FundTransferRequest fundTransferrequest ) {
 	return retailbankService.fundTransfer( fundTransferrequest );
+	}
+	
+	@PostMapping("/addcustomer")
+	public String addcustomer(@RequestBody CustomerRequest customerRequest ) {
+	String s=retailbankService.addCustomer( customerRequest );
+		return s;
 
 }
 }

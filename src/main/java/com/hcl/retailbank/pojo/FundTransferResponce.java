@@ -4,19 +4,18 @@ import java.io.Serializable;
 
 public class FundTransferResponce implements Serializable {
 	private int responceCode;
-	private String responceStatus;
+	private StringBuilder responceMessage;
 	public int getResponceCode() {
 		return responceCode;
 	}
 	public void setResponceCode(int responceCode) {
 		this.responceCode = responceCode;
 	}
-	public String getResponceStatus() {
-		return responceStatus;
+	public StringBuilder getResponceMessage() {
+		return responceMessage;
 	}
-	public void setResponceStatus(String responceStatus) {
-		this.responceStatus = responceStatus;
+	public void setResponceMessage(StringBuilder responceMessage) {
+		this.responceMessage = responceMessage;
 	}
-	 
-
+	
 }
