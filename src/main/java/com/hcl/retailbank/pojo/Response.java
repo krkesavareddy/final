@@ -1,9 +1,12 @@
 package com.hcl.retailbank.pojo;
 
 public class Response {
-	
 	private String message;
 	private Boolean success;
+
+	public Response() {
+
+	}
 
 	public Response(String message, Boolean success) {
 		super();
