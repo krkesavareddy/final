@@ -3,15 +3,18 @@ package com.hcl.retailbank.service;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.hcl.retailbank.entity.CustomerCreation;
 import com.hcl.retailbank.entity.CustomerFundTransfer;
 import com.hcl.retailbank.pojo.CustomerRequest;
+import com.hcl.retailbank.pojo.CustomerViewHistory;
 import com.hcl.retailbank.pojo.FundTransferRequest;
 import com.hcl.retailbank.pojo.FundTransferResponce;
 import com.hcl.retailbank.repository.CustomerCreationRepository;
 import com.hcl.retailbank.repository.CustomerGetRepository;
+import com.hcl.retailbank.repository.CustomerViewHistoryRepository;
 import com.hcl.retailbank.repository.FundTransferRepository;
 
 @Service
@@ -23,6 +26,9 @@ public class RetailbankServiceImpl implements RetailbankService{
 	@Autowired
 	CustomerCreationRepository customerCreationRepository;
 
+	 @Autowired
+	 @Qualifier("customerViewHistoryRepositories")
+	private CustomerViewHistoryRepository customerViewHistoryRepository;
 	@Override
 	public FundTransferResponce fundTransfer(FundTransferRequest fundTransferrequest) {
 		
@@ -63,12 +69,25 @@ public class RetailbankServiceImpl implements RetailbankService{
 			fundTransferRepository.save(customerFundTransfer);
 			
 			fundTransferResponce.setResponceCode(200);
+
 			StringBuilder stringBuilder =new StringBuilder();
              stringBuilder.append(fundTransferrequest.getTransactionAmount());
-			 stringBuilder.append("rupess can transfer sucessfully to");
+			 stringBuilder.append(" rupess can transfer sucessfully to ");
 			 stringBuilder.append(fundTransferrequest.getToAccountNumber());
 			fundTransferResponce.setResponceMessage(stringBuilder);
+
+			fundTransferResponce.setResponceStatus("sucess");
+			
+			CustomerViewHistory customerViewHistory=new CustomerViewHistory();
+			customerViewHistory.setFromAccountNumber(customerFundTransfer.getFromAccountNumber());
+			customerViewHistory.setToAccountNumber(customerFundTransfer.getToAccountNumber());
+			customerViewHistory.setTransactionAmount(customerFundTransfer.getTransactionAmmount());
+			customerViewHistory.setTransactionDate(customerFundTransfer.getTransactiondate());
+			customerViewHistory.setTransactionId(customerFundTransfer.getTransactionId());
+			customerViewHistory.setTransactionType(customerFundTransfer.getTransactionType());
+			customerViewHistoryRepository.save(customerViewHistory);
 			return fundTransferResponce;
+			
 		}catch(Exception e) {
 			fundTransferResponce.setResponceCode(400);
 			fundTransferResponce.setResponceMessage(new StringBuilder("some internal problem please try after sometimes"));
