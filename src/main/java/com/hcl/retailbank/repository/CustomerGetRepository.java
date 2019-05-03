@@ -6,5 +6,6 @@ import com.hcl.retailbank.entity.CustomerCreation;
 
 public interface CustomerGetRepository extends JpaRepository<CustomerCreation, Long> {
 	public CustomerCreation findByCustomerId(Long customerId);
+	
 
 }
